@@ -5,6 +5,9 @@ public class Main{
     public static void main(String[] args){
         Scanner in = new Scanner(System.in);
         ArrayList<Robot> robots = new ArrayList<Robot>();
+        for(int i = 0; i < 10; i++){
+            robots.add(new Robot("'" + i + "'"));
+        }
         int choice  = -1;
         p("|============================================================================|");
         p("|            Welcome to Hyland & Monohan Aircraft Manufacturing              |");
@@ -19,6 +22,9 @@ public class Main{
                 case 1:
                     p("Starting the system...");
                     //initialise system 
+                    for(Robot r : robots){
+                        r.start();
+                    }
                 break;
                 case 5:
                     p("Goodbye!");
