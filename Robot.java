@@ -11,7 +11,7 @@ public class Robot extends Thread{
         this.id = id;
     }
 
-    public String getID (){
+    public String getID(){
         return this.id;
     }
 
@@ -40,7 +40,6 @@ public class Robot extends Thread{
     }
 
     //Add method to notify system its done installing parts on aircraft
-    //Add method to send aircraft to other Robot
     //Add method to wait if not in service
     
 }

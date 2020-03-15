@@ -1,16 +1,24 @@
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.Random;
+import java.util.ArrayDeque;
+import java.util.Queue;
 
 public class Main{
+
+    private static Queue<Aircraft> aircrafts;
+
     public static void main(String[] args){
         Scanner in = new Scanner(System.in);
+
         ArrayList<Robot> robots = new ArrayList<Robot>();
         for(int i = 0; i < 10; i++){
             robots.add(new Robot("'" + i + "'"));
         }
         int choice  = -1;
+        aircrafts = new ArrayDeque<Aircraft>();
         p("|============================================================================|");
-        p("|            Welcome to Hyland & Monohan Aircraft Manufacturing              |");
+        p("|            Welcome to Hyland & Monahan Aircraft Manufacturing              |");
         p("|                                                                            |");
         p("| Please press the number corrosponding to the task you with to perform:     |");
         p("|============================================================================|");
@@ -25,6 +33,11 @@ public class Main{
                     for(Robot r : robots){
                         r.start();
                     }
+                    Random rn = new Random();
+                    //randomly sets aircraft's parts needed from 1 - 10 parts
+                    Aircraft aircraft = new Aircraft("ac1", rn.nextInt(10)+1);
+                    aircrafts.add(aircraft);
+                    System.out.println(aircrafts);
                 break;
                 case 5:
                     p("Goodbye!");
