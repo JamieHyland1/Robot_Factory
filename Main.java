@@ -9,14 +9,11 @@ public class Main{
     private static Queue<Aircraft> aircrafts;
 
     public static void main(String[] args){
-        Scanner in = new Scanner(System.in);
 
-        ArrayList<Robot> robots = new ArrayList<Robot>();
-        for(int i = 0; i < 10; i++){
-            robots.add(new Robot("'" + i + "'"));
-        }
+        Scanner in = new Scanner(System.in);
         int choice  = -1;
         aircrafts = new ArrayDeque<Aircraft>();
+
         p("|============================================================================|");
         p("|            Welcome to Hyland & Monahan Aircraft Manufacturing              |");
         p("|                                                                            |");
@@ -29,13 +26,10 @@ public class Main{
             switch(choice){
                 case 1:
                     p("Starting the system...");
-                    //initialise system 
-                    for(Robot r : robots){
-                        r.start();
-                    }
+                    //initialise system
                     Random rn = new Random();
                     //randomly sets aircraft's parts needed from 1 - 10 parts
-                    Aircraft aircraft = new Aircraft("ac1", rn.nextInt(10)+1);
+                    Aircraft aircraft = new Aircraft("Aircraft 1", rn.nextInt(10)+1);
                     aircrafts.add(aircraft);
                     System.out.println(aircrafts);
                 break;
@@ -47,6 +41,7 @@ public class Main{
                     break;
             }
         }
+        in.close();
     }
    
     //helper method that uses polymorphism to print out anything you supply to it,
