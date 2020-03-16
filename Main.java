@@ -19,6 +19,7 @@ public class Main{
                 case 1:
                     p("Starting the system...");
                     //initialise system 
+                    //should be undertaken by operator
                 break;
                 case 5:
                     p("Goodbye!");
