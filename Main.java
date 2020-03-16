@@ -1,13 +1,21 @@
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.Random;
+import java.util.ArrayDeque;
+import java.util.Queue;
 
 public class Main{
+
+    private static Queue<Aircraft> aircrafts;
+
     public static void main(String[] args){
+
         Scanner in = new Scanner(System.in);
-        ArrayList<Robot> robots = new ArrayList<Robot>();
         int choice  = -1;
+        aircrafts = new ArrayDeque<Aircraft>();
+
         p("|============================================================================|");
-        p("|            Welcome to Hyland & Monohan Aircraft Manufacturing              |");
+        p("|            Welcome to Hyland & Monahan Aircraft Manufacturing              |");
         p("|                                                                            |");
         p("| Please press the number corrosponding to the task you with to perform:     |");
         p("|============================================================================|");
@@ -18,8 +26,12 @@ public class Main{
             switch(choice){
                 case 1:
                     p("Starting the system...");
-                    //initialise system 
-                    //should be undertaken by operator
+                    //initialise system
+                    Random rn = new Random();
+                    //randomly sets aircraft's parts needed from 1 - 10 parts
+                    Aircraft aircraft = new Aircraft("Aircraft 1", rn.nextInt(10)+1);
+                    aircrafts.add(aircraft);
+                    System.out.println(aircrafts);
                 break;
                 case 5:
                     p("Goodbye!");
@@ -29,6 +41,7 @@ public class Main{
                     break;
             }
         }
+        in.close();
     }
    
     //helper method that uses polymorphism to print out anything you supply to it,
