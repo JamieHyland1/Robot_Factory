@@ -1,9 +1,11 @@
+import java.util.ArrayList;
+
 public class Aircraft{
 
     private String id;
-    private int parts_needed;
+    private ArrayList<Integer> parts_needed = new ArrayList<Integer>();
 
-    public Aircraft(String id, int parts_needed){
+    public Aircraft(String id, ArrayList<Integer> parts_needed){
         //default constructor
         this.id = id;
         this.parts_needed = parts_needed;
@@ -13,7 +15,7 @@ public class Aircraft{
         return id;
     }
 
-    public int getPartsNeeded() {
+    public ArrayList<Integer> getPartsNeeded() {
         return parts_needed;
     }
 

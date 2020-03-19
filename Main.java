@@ -29,9 +29,17 @@ public class Main{
                     //initialise system
                     Random rn = new Random();
                     //randomly sets aircraft's parts needed from 1 - 10 parts
-                    Aircraft aircraft = new Aircraft("Aircraft 1", rn.nextInt(10)+1);
+                    ArrayList<Integer> parts = new ArrayList<Integer>();
+                    for (int i = 0; i < 10; i++) {
+                        if (rn.nextBoolean()) {
+                            parts.add(i);
+                        }
+                    }
+                    Aircraft aircraft = new Aircraft("Aircraft 1", parts);
                     aircrafts.add(aircraft);
                     System.out.println(aircrafts);
+                    Operator test = new Operator();
+                    test.orderParts(10);
                 break;
                 case 5:
                     p("Goodbye!");
