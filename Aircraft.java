@@ -20,6 +20,6 @@ public class Aircraft{
     }
 
     public String toString() {
-        return "Aircraft: " + getId() + " needs " + getPartsNeeded() + " parts.";
+        return "Aircraft: " + getId() + " needs work on " + getPartsNeeded();
     }
 }

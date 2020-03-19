@@ -2,12 +2,10 @@ public class Robot extends Thread {
 
     private String id;
     private int installAmount;
+    private Factory factory;
 
-    public Robot() {
-        // default constructor
-    }
-
-    public Robot(final String id) {
+    public Robot(Factory factory, final String id) {
+        this.factory = factory;
         this.id = id;
         this.installAmount = (int) Math.floor(Math.random() * (10) + 1);
     }
