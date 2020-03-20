@@ -1,51 +1,30 @@
-import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.Random;
-import java.util.ArrayDeque;
-import java.util.Queue;
 
-public class Main{
+public class Main extends Thread {
 
-    private static Queue<Aircraft> aircrafts;
+    private static Scanner in = new Scanner(System.in);
 
     public static void main(String[] args){
 
-        Scanner in = new Scanner(System.in);
-        int choice  = -1;
-        aircrafts = new ArrayDeque<Aircraft>();
+        String choice  = " ";
 
         p("|============================================================================|");
         p("|            Welcome to Hyland & Monahan Aircraft Manufacturing              |");
         p("|                                                                            |");
-        p("| Please press the number corrosponding to the task you with to perform:     |");
+        p("|           Please press Enter to start the manufactoring process.           |");
         p("|============================================================================|");
 
-        while(choice != 5){
-            printMenu();
-            choice = in.nextInt();
+        while(!choice.equals("")){
+            choice = in.nextLine();
             switch(choice){
-                case 1:
+                case "":
                     p("Starting the system...");
                     //initialise system
-                    Random rn = new Random();
-                    //randomly sets aircraft's parts needed from 1 - 10 parts
-                    ArrayList<Integer> parts = new ArrayList<Integer>();
-                    for (int i = 0; i < 10; i++) {
-                        if (rn.nextBoolean()) {
-                            parts.add(i);
-                        }
-                    }
-                    Aircraft aircraft = new Aircraft("Aircraft 1", parts);
-                    aircrafts.add(aircraft);
-                    System.out.println(aircrafts);
-                    Operator test = new Operator();
-                    test.orderParts(10);
-                break;
-                case 5:
-                    p("Goodbye!");
+                    Factory f = new Factory();
+                    f.setup();
                 break;
                 default:
-                    p("That isnt a valid option!");
+                    p(choice + " isn't a valid option!");
                     break;
             }
         }
@@ -58,11 +37,5 @@ public class Main{
     public static void p(Object o){
         System.out.println(o);
     }
-
-    static void printMenu(){
-        p("|----------------------------------------------------------------------------------------|");
-        p("|1.Start the manufacturing process                                                       |");
-        p("|5.Close the system                                                                      |");
-        p("|----------------------------------------------------------------------------------------|");
-    }
+    
 }
