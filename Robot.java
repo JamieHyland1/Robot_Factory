@@ -3,11 +3,13 @@ public class Robot extends Thread {
     private String id;
     private int installAmount;
     private Factory factory;
+    private Aircraft workingAircraft;
 
     public Robot(Factory factory, final String id) {
         this.factory = factory;
         this.id = id;
-        this.installAmount = (int) Math.floor(Math.random() * (10) + 1);
+        this.installAmount = (int) Math.floor(Math.random() * (5) + 1);
+        this.workingAircraft = null;
     }
 
     public String getID() {
@@ -20,6 +22,14 @@ public class Robot extends Thread {
 
     public void start() {
         System.out.println("Starting Robot " + this.getID());
+    }
+
+    public synchronized void setWorkingAircraft(Aircraft aircraft) {
+        this.workingAircraft = aircraft;
+    }
+
+    public Aircraft getWorkingAircraft() {
+        return this.workingAircraft;
     }
 
     // main logic for robot goes in here

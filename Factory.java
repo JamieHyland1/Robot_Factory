@@ -5,6 +5,7 @@ import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.Random;
+import java.util.InputMismatchException;
 
 public class Factory {
 
@@ -27,7 +28,7 @@ public class Factory {
 
     public void setup() {
         for(int i = 0; i < 10; i++){
-            robots.add(new Robot(this, "'" + i + "'"));
+            robots.add(new Robot(this, Integer.toString(i)));
             (robots.get(i)).start();
         }
         commands();
@@ -35,8 +36,22 @@ public class Factory {
     }
 
     public void doWork() {
-        // get operator to move aircraft to robot and perform task
+        execute(() -> {
+            synchronized (this) {
+                operator.moveAircraft(aircrafts.poll());
+                // Just to see if robot get assigned an aircraft correctly. Will be removed
+                for (Robot r : robots) {
+                    System.out.println(r.getID() + ": "+ r.getWorkingAircraft());
+                }
+                // call function from Robot to do work
+                notify();
+            }
+        });
     }
+
+    public ArrayList<Robot> getRobots() {
+        return this.robots;
+    } 
 
     public synchronized void execute(Runnable r) {
         threadPool.execute(r);
@@ -48,7 +63,13 @@ public class Factory {
         menu();
 
         while(choice != 5){
-            choice = in.nextInt();
+            try {
+                choice = in.nextInt();
+            }
+            catch (InputMismatchException e) {
+                System.err.println("Wrong input! Please only input Integers...");
+            }
+            in.nextLine(); 
             switch(choice){
                 case 1:
                     Random rn = new Random();
@@ -60,16 +81,31 @@ public class Factory {
                         }
                     }
                     System.out.println("What is the name of the Aircraft?");
-                    String aircraftName = in.next();
+                    String aircraftName = in.nextLine();
                     Aircraft aircraft = new Aircraft(aircraftName, workNeeded);
                     aircrafts.add(aircraft);
                     System.out.println(aircraft);
                     doWork();
+                    synchronized (this) {
+                        try { wait(); } catch (InterruptedException e) {}
+                    }
                     menu();
                 break;
                 case 2:
+                    int parts;
                     System.out.println("How many parts would you like to order?");
-                    int parts = in.nextInt();
+                    while (true) {
+                        try {
+                            parts = in.nextInt();
+                            break;
+                        }
+                        catch (InputMismatchException e) {
+                            System.err.println("Wrong input! Please only input Integers...");
+                            in.nextLine();
+                            System.out.println("How many parts would you like to order?");
+                        }
+                    }
+                    in.nextLine(); 
                     operator.orderParts(parts);
                     menu();
                 break;

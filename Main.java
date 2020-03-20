@@ -16,7 +16,6 @@ public class Main extends Thread {
 
         while(!choice.equals("")){
             choice = in.nextLine();
-            System.out.println(choice);
             switch(choice){
                 case "":
                     p("Starting the system...");
@@ -25,7 +24,7 @@ public class Main extends Thread {
                     f.setup();
                 break;
                 default:
-                    p("That isn't a valid option!");
+                    p(choice + " isn't a valid option!");
                     break;
             }
         }

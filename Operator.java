@@ -4,14 +4,15 @@ import java.util.ArrayDeque;
 
 public class Operator {
     
-    private ArrayList<Robot> robots = new ArrayList<Robot>();
     private Factory factory;
     private int partsPool = 0;
+    ArrayList<Robot> robots;
     private Queue<Integer> robotsWaitingList;
 
     public Operator(Factory factory){
         this.factory = factory;
         this.partsPool = 100;
+        this.robots = factory.getRobots();
         this.robotsWaitingList = new ArrayDeque<Integer>();
     }
     
@@ -59,12 +60,23 @@ public class Operator {
         }
     }
 
-    public void moveAircraft() {
-        // move aircraft to robot
+    public void moveAircraft(Aircraft aircraft) {
+        ArrayList<Integer> parts = aircraft.getPartsNeeded();
+        for (int i = 0; i < parts.size(); i++) {
+            if ((robots).get(parts.get(i)).getWorkingAircraft() == null) {
+                (robots).get(parts.get(i)).setWorkingAircraft(aircraft);
+                aircraft.getPartsNeeded().remove(i);
+                break;
+            }
+            else {
+                System.out.println("Robot " + parts.get(i) + " is busy. Assigning to next Robot.");
+            }
+        } 
+        
     }
 
     public synchronized void waitingArea() {
-        // move robot from waiting area to get parts
+        // move robot from waiting area to wait for parts
     }
 
 
