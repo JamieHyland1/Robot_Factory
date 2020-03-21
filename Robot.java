@@ -11,6 +11,7 @@ public class Robot extends Thread {
         this.id = id;
         this.installAmount = 1 + (int)Math.floor(Math.random()*10);
         this.workingAircraft = null;
+        System.out.println("Starting Robot " + this.getID());
     }
 
     public int getID() {
@@ -35,7 +36,7 @@ public class Robot extends Thread {
         return this.installAmount;
     }
 
-    public void getParts(Robot robot) {
+    public synchronized void getParts(Robot robot) {
         factory.getOperator().takeParts(robot);
         this.installAmount = 5;
     }

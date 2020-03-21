@@ -18,7 +18,7 @@ public class Factory {
     
     public Factory() {
         if (threadPool == null) {
-            threadPool = Executors.newFixedThreadPool(5);
+            threadPool = Executors.newFixedThreadPool(10);
         }
         aircrafts = new ArrayDeque<Aircraft>();
         robots = new ArrayList<Robot>();

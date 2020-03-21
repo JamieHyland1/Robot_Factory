@@ -30,7 +30,7 @@ public class Operator {
                 }
                 else {
                     if (!robotsWaitingList.contains(robot)) {
-                        System.out.println("Not enough parts avaiable. You will have to wait.");
+                        System.out.println("Not enough parts avaiable for " + robot + ". Waiting for parts...");
                         robotsWaitingList.add(robot);
                         waitingArea(this.partsPool);
                     }
@@ -40,10 +40,11 @@ public class Operator {
     }
 
     public void orderParts(int order) {
+        
         // factory.execute(() -> {
         //     synchronized (this) {
                 if (order > 0) {
-                    System.out.println("New parts ordered. They will be delivered shortly...");
+                    System.out.println("\nNew parts ordered. They will be delivered shortly...");
                     try {
                         Thread.sleep(3000);
                     } 
@@ -67,17 +68,33 @@ public class Operator {
                     return;
                 }
                 for (int i = 0; i < parts.size(); i++) {
-                    if ((robots).get(parts.get(i)).getWorkingAircraft() == null) {
-                        (robots).get(parts.get(i)).setWorkingAircraft(aircraft);
-                        System.out.println((robots).get(parts.get(i)) + " is now working on Aircraft: " + aircraft.getId());
-                        (robots).get(parts.get(i)).getParts((robots).get(parts.get(i)));;
+                    Robot robot = (robots).get(parts.get(i));
+                    if (robot.getWorkingAircraft() == null) {
+                        System.out.println("Moving Aircraft " + aircraft.getID() + " to Robot " + robot.getID());
+                        try {
+                            Thread.sleep(5000); // wait for 100 ticks / 5 seconds
+                        } 
+                        catch (final InterruptedException e) {
+                            System.out.println(e);
+                        }
+                        robot.setWorkingAircraft(aircraft);
+                        System.out.println(robot + " is now working on Aircraft: " + aircraft.getID() + "\n");
+                        robot.getParts(robot);
                         return;
                     }
                     else {
                         System.out.println("Robot " + parts.get(i) + " is busy. Assigning to next Robot.");
                     }
                 }
-                // implement Aircraft needs to wait until next Robot is free if no robots are free
+                try {
+                    System.out.println("All Robots are working. Aircraft " + aircraft.getID() + " will have to wait.");
+                    Thread.sleep(5000);
+                    System.out.println("Tring to assign aircraft " + aircraft.getID() + " to a Robot again.");
+                    moveAircraft(aircraft);
+                } 
+                catch (final InterruptedException e) {
+                    System.out.println(e);
+                }
             }
         });
     }
