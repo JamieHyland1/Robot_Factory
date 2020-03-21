@@ -61,6 +61,7 @@ public class Operator {
         factory.execute(() -> {
             synchronized (this) {
                 ArrayList<Integer> parts = aircraft.getPartsNeeded();
+                System.out.println(parts.toString());
                 if (parts.isEmpty()) {
                     System.out.println("Aircraft is finished assembly. Removing from factory.");
                     return;
