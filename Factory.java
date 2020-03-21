@@ -18,7 +18,7 @@ public class Factory {
     
     public Factory() {
         if (threadPool == null) {
-            threadPool = Executors.newFixedThreadPool(5);
+            threadPool = Executors.newFixedThreadPool(10);
         }
         aircrafts = new ArrayDeque<Aircraft>();
         robots = new ArrayList<Robot>();
@@ -28,7 +28,6 @@ public class Factory {
     public void setup() {
         for(int i = 0; i < 10; i++){
             robots.add(new Robot(this, Integer.toString(i)));
-            (robots.get(i)).start();
         }
         commands();
         threadPool.shutdown();

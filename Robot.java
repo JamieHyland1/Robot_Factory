@@ -10,18 +10,15 @@ public class Robot extends Thread {
         this.id = id;
         this.installAmount = 5;
         this.workingAircraft = null;
+        System.out.println("Starting Robot " + this.getID());
     }
 
     public String getID() {
         return this.id;
     }
 
-    public void setId(final String id) {
+    public void setID(final String id) {
         this.id = id;
-    }
-
-    public void start() {
-        System.out.println("Starting Robot " + this.getID());
     }
 
     public synchronized void setWorkingAircraft(Aircraft aircraft) {
@@ -36,7 +33,7 @@ public class Robot extends Thread {
         return this.installAmount;
     }
 
-    public void getParts(Robot robot) {
+    public synchronized void getParts(Robot robot) {
         factory.getOperator().takeParts(robot);
     }
 

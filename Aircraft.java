@@ -18,7 +18,7 @@ public class Aircraft{
         }
     }
     
-    public String getId() {
+    public String getID() {
         return id;
     }
 
@@ -27,6 +27,6 @@ public class Aircraft{
     }
 
     public String toString() {
-        return "Aircraft: " + getId() + " needs work on " + getPartsNeeded();
+        return "Aircraft: " + getID() + " needs work on " + getPartsNeeded();
     }
 }
