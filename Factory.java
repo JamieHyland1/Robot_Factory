@@ -27,7 +27,7 @@ public class Factory {
 
     public void setup() {
         for(int i = 0; i < 10; i++){
-            robots.add(new Robot(this, Integer.toString(i)));
+            robots.add(new Robot(this,i));
             (robots.get(i)).start();
         }
         commands();
