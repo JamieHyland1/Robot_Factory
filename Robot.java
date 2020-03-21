@@ -8,7 +8,7 @@ public class Robot extends Thread {
     public Robot(Factory factory, final String id) {
         this.factory = factory;
         this.id = id;
-        this.installAmount = (int) Math.floor(Math.random() * (5) + 1);
+        this.installAmount = 5;
         this.workingAircraft = null;
     }
 
@@ -31,6 +31,19 @@ public class Robot extends Thread {
     public Aircraft getWorkingAircraft() {
         return this.workingAircraft;
     }
+
+    public int getInstallAmount() {
+        return this.installAmount;
+    }
+
+    public void getParts(Robot robot) {
+        factory.getOperator().takeParts(robot);
+    }
+
+    public String toString() {
+        return "Robot: " + getID();
+    }
+
 
     // main logic for robot goes in here
     // not sure if this is correct? I dont think we can supply the parts variable at runtime as java is pass by value

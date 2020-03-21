@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.Random;
 import java.util.InputMismatchException;
 
 public class Factory {
@@ -19,7 +18,7 @@ public class Factory {
     
     public Factory() {
         if (threadPool == null) {
-            threadPool = Executors.newFixedThreadPool(2);
+            threadPool = Executors.newFixedThreadPool(5);
         }
         aircrafts = new ArrayDeque<Aircraft>();
         robots = new ArrayList<Robot>();
@@ -38,19 +37,18 @@ public class Factory {
     public void doWork() {
         execute(() -> {
             synchronized (this) {
-                operator.moveAircraft(aircrafts.poll());
-                // Just to see if robot get assigned an aircraft correctly. Will be removed
-                for (Robot r : robots) {
-                    System.out.println(r.getID() + ": "+ r.getWorkingAircraft());
-                }
-                // call function from Robot to do work
-                notify();
+                Aircraft aircraft = aircrafts.poll();
+                operator.moveAircraft(aircraft);
             }
         });
     }
 
     public ArrayList<Robot> getRobots() {
         return this.robots;
+    } 
+
+    public Operator getOperator() {
+        return this.operator;
     } 
 
     public synchronized void execute(Runnable r) {
@@ -72,26 +70,38 @@ public class Factory {
             in.nextLine(); 
             switch(choice){
                 case 1:
-                    Random rn = new Random();
-                    //randomly sets aircraft's need work array from 0 - 9
-                    ArrayList<Integer> workNeeded = new ArrayList<Integer>();
-                    for (int i = 0; i < 10; i++) {
-                        if (rn.nextBoolean()) {
-                            workNeeded.add(i);
-                        }
-                    }
                     System.out.println("What is the name of the Aircraft?");
                     String aircraftName = in.nextLine();
-                    Aircraft aircraft = new Aircraft(aircraftName, workNeeded);
+                    Aircraft aircraft = new Aircraft(aircraftName);
                     aircrafts.add(aircraft);
-                    System.out.println(aircraft);
                     doWork();
-                    synchronized (this) {
-                        try { wait(); } catch (InterruptedException e) {}
-                    }
                     menu();
                 break;
                 case 2:
+                    System.out.println("How many Aircrafts would you like to order?");
+                    int aircraftNum;
+                    while (true) {
+                        try {
+                            aircraftNum = in.nextInt();
+                            break;
+                        }
+                        catch (InputMismatchException e) {
+                            System.err.println("Wrong input! Please only input Integers...");
+                            in.nextLine();
+                            System.out.println("How many Aircrafts would you like to order?");
+                        }
+                    }
+                    in.nextLine(); 
+                    System.out.println("What are the name of the Aircrafts?");
+                    String aircraftsName = in.nextLine();
+                    for (int i = 0; i < aircraftNum; i++) {
+                        Aircraft a = new Aircraft(aircraftsName + "-" + Integer.toString(i));
+                        aircrafts.add(a);
+                        doWork();
+                    }
+                    menu();
+                break;
+                case 3:
                     int parts;
                     System.out.println("How many parts would you like to order?");
                     while (true) {
@@ -123,7 +133,8 @@ public class Factory {
         System.out.println("|----------------------------------------------------------------------------------------|");
         System.out.println("|  What would you like to do :                                                           |");
         System.out.println("|     1. Build Aircraft                                                                  |");
-        System.out.println("|     2. Buy Parts                                                                       |");
+        System.out.println("|     2. Build Mulitple Aircrafts                                                        |");
+        System.out.println("|     3. Buy Parts                                                                       |");
         System.out.println("|     5. Close the system                                                                |");
         System.out.println("|----------------------------------------------------------------------------------------|");
     }

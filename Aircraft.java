@@ -1,14 +1,21 @@
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Aircraft{
 
     private String id;
     private ArrayList<Integer> parts_needed = new ArrayList<Integer>();
+    private Random rn = new Random();
 
-    public Aircraft(String id, ArrayList<Integer> parts_needed){
+    public Aircraft(String id){
         //default constructor
         this.id = id;
-        this.parts_needed = parts_needed;
+        //randomly sets aircraft's need work array from 0 - 9
+        for (int i = 0; i < 10; i++) {
+            if (rn.nextBoolean()) {
+                parts_needed.add(i);
+            }
+        }
     }
     
     public String getId() {

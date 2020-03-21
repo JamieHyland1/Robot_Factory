@@ -5,78 +5,97 @@ import java.util.ArrayDeque;
 public class Operator {
     
     private Factory factory;
-    private int partsPool = 0;
-    ArrayList<Robot> robots;
-    private Queue<Integer> robotsWaitingList;
+    private int partsPool;
+    private ArrayList<Robot> robots;
+    private Queue<Robot> robotsWaitingList;
 
     public Operator(Factory factory){
         this.factory = factory;
-        this.partsPool = 100;
+        this.partsPool = 5;
         this.robots = factory.getRobots();
-        this.robotsWaitingList = new ArrayDeque<Integer>();
+        this.robotsWaitingList = new ArrayDeque<Robot>();
     }
     
     public int getPartsCount() {
         return this.partsPool;
     }
 
-    public void takeParts(int partsNeeded) {
+    public void takeParts(Robot robot) {
         factory.execute(() -> {
             synchronized (this) {
+                int partsNeeded = robot.getInstallAmount();
                 if (this.partsPool >= partsNeeded) {
                     this.partsPool -= partsNeeded;
-                    if (this.partsPool <= 10) {
-                        System.out.println("The factory is low on parts. Ordering more parts.");
-                        try {
-                            Thread.sleep(10000);
-                        } 
-                        catch (final InterruptedException e) {
-                            System.out.println(e);
-                        }
-                        orderParts(50);
-                    }
+                    System.out.println("Parts given to Robot " + robot.getID() + ". There now are " + this.partsPool + " parts remaining.");
                 }
                 else {
-                    System.out.println("The factory doesn't have enough parts. You will have to wait.");
-                    robotsWaitingList.add(partsNeeded);
-                    waitingArea();
+                    if (!robotsWaitingList.contains(robot)) {
+                        System.out.println("Not enough parts avaiable. You will have to wait.");
+                        robotsWaitingList.add(robot);
+                        waitingArea(this.partsPool);
+                    }
                 }
-                System.out.println("Parts needed must be a positive number!");
             }
         });
     }
 
     public void orderParts(int order) {
-        if (order > 0) {
-            System.out.println("New parts ordered. They will be delivered shortly...");
-            try {
-                Thread.sleep(3000);
-            } 
-            catch (final InterruptedException e) {
-                System.out.println(e);
-            }
-            this.partsPool = this.partsPool + order;
-            System.out.println("Parts have been restocked. There are now " + getPartsCount() + " parts in stock.");
-        }
+        // factory.execute(() -> {
+        //     synchronized (this) {
+                if (order > 0) {
+                    System.out.println("New parts ordered. They will be delivered shortly...");
+                    try {
+                        Thread.sleep(3000);
+                    } 
+                    catch (final InterruptedException e) {
+                        System.out.println(e);
+                    }
+                    this.partsPool = this.partsPool + order;
+                    System.out.println("Parts have been restocked. There are now " + getPartsCount() + " parts in stock.\n");
+                }
+        //     }
+        // });
     }
 
     public void moveAircraft(Aircraft aircraft) {
-        ArrayList<Integer> parts = aircraft.getPartsNeeded();
-        for (int i = 0; i < parts.size(); i++) {
-            if ((robots).get(parts.get(i)).getWorkingAircraft() == null) {
-                (robots).get(parts.get(i)).setWorkingAircraft(aircraft);
-                aircraft.getPartsNeeded().remove(i);
-                break;
+        factory.execute(() -> {
+            synchronized (this) {
+                ArrayList<Integer> parts = aircraft.getPartsNeeded();
+                if (parts.isEmpty()) {
+                    System.out.println("Aircraft is finished assembly. Removing from factory.");
+                    return;
+                }
+                for (int i = 0; i < parts.size(); i++) {
+                    if ((robots).get(parts.get(i)).getWorkingAircraft() == null) {
+                        (robots).get(parts.get(i)).setWorkingAircraft(aircraft);
+                        System.out.println((robots).get(parts.get(i)) + " is now working on Aircraft: " + aircraft.getId());
+                        (robots).get(parts.get(i)).getParts((robots).get(parts.get(i)));;
+                        return;
+                    }
+                    else {
+                        System.out.println("Robot " + parts.get(i) + " is busy. Assigning to next Robot.");
+                    }
+                }
+                // implement Aircraft needs to wait until next Robot is free if no robots are free
             }
-            else {
-                System.out.println("Robot " + parts.get(i) + " is busy. Assigning to next Robot.");
-            }
-        } 
-        
+        });
     }
 
-    public synchronized void waitingArea() {
-        // move robot from waiting area to wait for parts
+
+    public  void waitingArea(int parts) {
+        factory.execute(() -> {
+            synchronized (this) {
+                int partsNow = parts;
+                if (partsPool <= 10){
+                    orderParts(50);
+                }
+                while (!robotsWaitingList.isEmpty()) {
+                    if (this.partsPool != partsNow) {
+                        takeParts(robotsWaitingList.poll());
+                    }
+                }
+            }
+        });
     }
 
 
