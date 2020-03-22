@@ -12,9 +12,14 @@ public class Aircraft{
         this.id = id;
         //randomly sets aircraft's need work array from 0 - 9
         for (int i = 0; i < 10; i++) {
+            //50/50 chance
             if (rn.nextBoolean()) {
                 parts_needed.add(i);
             }
+        }
+        // On the very low chance the foor loop adds nothing
+        if (parts_needed.size() == 0) {
+            parts_needed.add(0);
         }
     }
     
