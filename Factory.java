@@ -52,7 +52,7 @@ public class Factory {
         //             robots.get(i).setWorkingAircraft(a);
         //             notifyAll();
         //         } else {
-        //             System.out.println("Theres no aircrafts left :(");
+        //             Main.log("Theres no aircrafts left :(");
         //         }
         //     }
         // }
@@ -88,7 +88,7 @@ public class Factory {
             in.nextLine();
             switch (choice) {
                 case 1:
-                    System.out.println("How many Aircrafts would you like to order?");
+                    Main.log("How many Aircrafts would you like to order?");
                     int aircraftNum;
                     while (true) {
                         try {
@@ -97,36 +97,37 @@ public class Factory {
                         } catch (final InputMismatchException e) {
                             System.err.println("Wrong input! Please only input Integers...");
                             in.nextLine();
-                            System.out.println("How many Aircrafts would you like to order?");
+                            Main.log("How many Aircrafts would you like to order?");
                         }
                     }
                     in.nextLine();
-                    System.out.println("What are the name of the Aircrafts?");
+                    Main.log("What are the name of the Aircrafts?");
                     final String aircraftsName = in.nextLine();
                     for (int i = 0; i < aircraftNum; i++) {
                         final Aircraft a = new Aircraft(aircraftsName + "-" + Integer.toString(i));
                         aircrafts.add(a);
                     }
                     setup();
-                    while(!this.operator.checkProduction()){System.out.println("");}
+                    //keeps printing out an array?
+                    //while(!this.operator.checkProduction()){Main.log("");}
                     threadPool.shutdown();
                     choice = 5;
                 break;
                 case 5:
-                    System.out.println("Goodbye!");
+                    Main.log("Goodbye!");
                 break;
                 default:
-                    System.out.println("That isn't a valid option!");
+                    Main.log("That isn't a valid option!");
                     break;
             }
         }
     }
 
     public void menu(){
-        System.out.println("|----------------------------------------------------------------------------------------|");
-        System.out.println("|  What would you like to do :                                                           |");
-        System.out.println("|     1. Select number of aircraft                                                       |");
-        System.out.println("|     5. Close the system                                                                |");
-        System.out.println("|----------------------------------------------------------------------------------------|");
+        Main.log("|----------------------------------------------------------------------------------------|");
+        Main.log("|  What would you like to do :                                                           |");
+        Main.log("|     1. Select number of aircraft                                                       |");
+        Main.log("|     5. Close the system                                                                |");
+        Main.log("|----------------------------------------------------------------------------------------|");
     }
 }

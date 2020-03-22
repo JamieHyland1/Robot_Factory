@@ -35,21 +35,21 @@ public class Operator extends Thread {
 
     public void enterWaiting(int id){
         if(!this.robotsInWaiting.contains(id)){
-            System.out.println("Removing robot" + id + " from waiting list");
+            Main.log("Removing robot" + id + " from waiting list");
             this.robotsInWaiting.add(id);
-            System.out.println("Current waiting List: " + this.robotsInWaiting.toString());
+            Main.log("Current waiting List: " + this.robotsInWaiting.toString());
         }
     }
 
     public  void leaveWaiting(int id){
-        System.out.println("Removing robot" + id + " from waiting list");
+        Main.log("Removing robot" + id + " from waiting list");
         this.robotsInWaiting.remove(id);
-        System.out.println("Current waiting List: " + this.robotsInWaiting.toString());
+        Main.log("Current Robot waiting List: " + this.robotsInWaiting.toString());
     }
 
     public synchronized boolean checkProduction() {
-        System.out.println(this.robotsInWaiting.toString());
-        System.out.println(this.factory.getAirCrafts().isEmpty());
+        Main.log(this.robotsInWaiting.toString());
+        //Main.log(this.factory.getAirCrafts().isEmpty());
         return (10 == this.robotsInWaiting.size() && this.factory.getAirCrafts().isEmpty());
     }
 
@@ -58,10 +58,10 @@ public class Operator extends Thread {
             int partsNeeded = robot.getInstallAmount();
             if (this.partsPool >= partsNeeded) {
                 this.partsPool -= partsNeeded;
-                System.out.println("Parts given to Robot " + robot.getID() + ". There now are " + this.partsPool + " parts remaining.");
+                Main.log("Parts given to Robot " + robot.getID() + ". There now are " + this.partsPool + " parts remaining.");
             } else {
                 if (!robotsWaitingList.contains(robot)) {
-                    System.out.println("Not enough parts avaiable for " + robot + ". Waiting for parts...");
+                    Main.log("Not enough parts avaiable for " + robot + ". Waiting for parts...");
                     robotsWaitingList.add(robot);
                     waitingArea(this.partsPool);
                 }
@@ -82,15 +82,15 @@ public class Operator extends Thread {
     public void moveAircraft(Aircraft aircraft) {
         synchronized (this) {
             ArrayList<Integer> parts = aircraft.getPartsNeeded();
-            System.out.println(aircraft.getID() + ": " + parts.toString());
+            Main.log(aircraft.getID() + ": " + parts.toString());
             if (parts.isEmpty()) {
-                System.out.println("Aircraft is finished assembly. Removing from factory.");
-                System.out.println("Robots are finished working: " + this.checkProduction());
+                Main.log("Aircraft is finished assembly. Removing from factory.");
+                Main.log("Robots are finished working: " + this.checkProduction());
                 return;
             }
-            System.out.println(this.factory.getAirCrafts().size());
+            //Main.log(this.factory.getAirCrafts().size());
             this.factory.getAirCrafts().add(aircraft);
-            System.out.println("Robots are finished working: " + this.checkProduction());
+            Main.log("Robots are finished working: " + this.checkProduction());
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -103,7 +103,7 @@ public class Operator extends Thread {
     }
     public void orderParts(int order) {
         if (order > 0) {
-            System.out.println("\nNew parts ordered. They will be delivered shortly...");
+            Main.log("\nNew parts ordered. They will be delivered shortly...");
             try {
                 Thread.sleep(1500);
             } 
@@ -111,7 +111,7 @@ public class Operator extends Thread {
                 System.out.println(e);
             }
             this.partsPool = this.partsPool + order;
-            System.out.println("Parts have been restocked. There are now " + getPartsCount() + " parts in stock.\n");
+            Main.log("Parts have been restocked. There are now " + getPartsCount() + " parts in stock.\n");
         }
     }
 

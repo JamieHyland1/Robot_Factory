@@ -12,7 +12,7 @@ public class Robot extends Thread {
         this.id = id;
         this.installAmount = 1 + (int) Math.floor(Math.random() * 10);
         this.workingAircraft = null;
-        System.out.println("Starting Robot " + this.getID());
+        Main.log("Starting Robot " + this.getID());
     }
 
     public Robot(final Factory factory, final int id, Operator op) {
@@ -20,7 +20,7 @@ public class Robot extends Thread {
         this.id = id;
         this.installAmount = 1 + (int) Math.floor(Math.random() * 10);
         this.workingAircraft = null;
-        System.out.println("Starting Robot " + this.getID());
+        Main.log("Starting Robot " + this.getID());
         this.op = op;
     }
 
@@ -56,14 +56,14 @@ public class Robot extends Thread {
     }
 
     public void returnToQueue() {
-       // System.out.println(this.toString() + " is returning " + this.workingAircraft.getID() + " to the operator");
+       // Main.log(this.toString() + " is returning " + this.workingAircraft.getID() + " to the operator");
         try {
             for (int i = 0; i < this.workingAircraft.getPartsNeeded().size(); i++) {
                 if (this.workingAircraft.getPartsNeeded().get(i) == this.getID())
                     this.workingAircraft.getPartsNeeded().remove(i);
                     this.op.enterWaiting(this.getID()); //enter waiting list now
             }
-       //     System.out.println(this.workingAircraft.getID() + " needs these parts "+ this.workingAircraft.getPartsNeeded().toString());
+       //     Main.log(this.workingAircraft.getID() + " needs these parts "+ this.workingAircraft.getPartsNeeded().toString());
             this.op.moveAircraft(this.workingAircraft);
             this.workingAircraft = null;
         } catch(Exception e){
@@ -80,10 +80,10 @@ public class Robot extends Thread {
             if(this.workingAircraft == null ) {
                     try {
                         this.workingAircraft = this.op.getAircraft(this.id);
-                        System.out.println(this.toString() + " has recieved aircraft" + this.workingAircraft.getID());
+                        Main.log(this.toString() + " has recieved aircraft " + this.workingAircraft.getID());
                     } 
                     catch (Exception ex) {
-                    System.out.println(this.toString() + " is waiting");
+                    Main.log(this.toString() + " is waiting");
                         try {
                             this.sleep(1000);
                         } catch (InterruptedException e) {
@@ -93,9 +93,9 @@ public class Robot extends Thread {
                     }
             }
             else if(this.workingAircraft != null) {
-                 System.out.println(this.toString() + " is working on Aircraft " + this.workingAircraft.getID());
+                 Main.log(this.toString() + " is working on Aircraft " + this.workingAircraft.getID());
                 while (this.installAmount > 0) {
-                    System.out.println(" " + this.toString() + " :*clank* *clank*");
+                    Main.log(" " + this.toString() + " :*clank* *clank*");
                     this.installAmount--;
                     try {
                         Thread.sleep(1000);
@@ -105,11 +105,11 @@ public class Robot extends Thread {
                
                 }
                 //TODO://order parts
-                System.out.println(this.getID() + " has finished working on aircraft");
+                Main.log(this.getID() + " has finished working on aircraft " + this.workingAircraft.getID());
                 this.returnToQueue();    
             }
         }
-        System.out.println(this.toString() + " is shutting down");
+        Main.log(this.toString() + " is shutting down");
 
     }
 }
