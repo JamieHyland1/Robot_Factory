@@ -22,6 +22,23 @@ public class Operator extends Thread {
             robotsInWaiting.add(i);
             robotsNeeded.add((i));
         }
+        
+    }
+
+    public void disperseAircrafts(){
+        while(!this.factory.getAirCrafts().isEmpty()){
+            Aircraft a = this.factory.getAirCrafts().poll();
+            int id = a.getPartsNeeded().get(0);
+            Main.log(a.getID() + " is going to Robot " + id);
+            this.factory.getQueuesForRobots().get(id).add(a);
+        }
+    }
+
+    public boolean empyRobotQueues(){
+        for(int i = 0; i < 10; i++){
+            if(this.factory.getQueuesForRobots().get(i).isEmpty() == false) return false;
+        }
+        return true;
     }
 
     public int getPartsCount() {
@@ -49,7 +66,7 @@ public class Operator extends Thread {
 
     public synchronized boolean checkProduction() {
 
-        return (10 == this.robotsInWaiting.size() && this.factory.getAirCrafts().isEmpty());
+        return (10 == this.robotsInWaiting.size() && this.factory.getAirCrafts().isEmpty() && this.empyRobotQueues());
     }
 
     public synchronized void removeRobot(int i) {
@@ -73,14 +90,16 @@ public class Operator extends Thread {
     }
 
     public synchronized Aircraft getAircraft(int id) {
-        Aircraft a = this.factory.getAirCrafts().poll();
-        HashSet s = new HashSet<Integer>(a.getPartsNeeded());
-        this.robotsNeeded.addAll(s);
-        if(a.getPartsNeeded().contains(id)){
-            this.leaveWaiting(id); // remove the robot from the waitingList
-            return a; //only give a robot an aircraft if it has the desired parts
+        if(!this.factory.getQueuesForRobots().get(id).isEmpty()){
+            Main.log("Robot " + id + " has this main aircrafts" + this.factory.getQueuesForRobots().get(id).toString());
+            Aircraft a = this.factory.getQueuesForRobots().get(id).poll();
+            HashSet<Integer> s = new HashSet<Integer>(a.getPartsNeeded());
+            this.robotsNeeded.addAll(s);
+            
+                this.leaveWaiting(id); // remove the robot from the waitingList
+                return a; //only give a robot an aircraft if it has the desired parts
         }
-        this.factory.getAirCrafts().add(a);
+      //  this.factory.getAirCrafts().add(a);
         return null;
     }
 
@@ -90,21 +109,19 @@ public class Operator extends Thread {
             Main.log(aircraft.getID() + ": " + parts.toString());
             if (parts.isEmpty()) {
                 Main.log("Aircraft is finished assembly. Removing from factory.");
-                Main.log("Robots are finished working: " + this.checkProduction());
                 return;
             }
             this.factory.getAirCrafts().add(aircraft);
-            Main.log("Robots are finished working: " + this.checkProduction());
+            this.disperseAircrafts();
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-               
         }
-        
     }
+
     public void orderParts(int order) {
         if (order > 0) {
             Main.log("\nNew parts ordered. They will be delivered shortly...");
