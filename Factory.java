@@ -2,122 +2,115 @@ import java.util.ArrayDeque;
 import java.util.Queue;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.InputMismatchException;
 
 public class Factory {
 
-    private Queue<Aircraft> aircrafts;
-    private ArrayList<Robot> robots;
-    private Operator operator;
-
+    private ArrayBlockingQueue<Aircraft> aircrafts;
+    private final Operator operator;
     private static ExecutorService threadPool;
+    private final ArrayList<Robot> robots;
+    private final ArrayList<Future> runningRobots;
+    private final Scanner in = new Scanner(System.in);
 
-    private Scanner in = new Scanner(System.in);
-    
     public Factory() {
         if (threadPool == null) {
             threadPool = Executors.newFixedThreadPool(10);
         }
-        aircrafts = new ArrayDeque<Aircraft>();
+
+        aircrafts = new ArrayBlockingQueue<Aircraft>(1000);
         robots = new ArrayList<Robot>();
         operator = new Operator(this);
+        runningRobots = new ArrayList<Future>();
+
     }
 
     public void setup() {
-        for(int i = 0; i < 10; i++){
-            robots.add(new Robot(this,i));
-            (robots.get(i)).start();
+        for (int i = 0; i < 10; i++) {
+            final Robot r = new Robot(this, i, operator);
+            //robots.add(r);
+            runningRobots.add(threadPool.submit(r));
         }
-        commands();
-        threadPool.shutdown();
+        // threadPool.shutdown();
+    }
+
+    public ArrayList<Future> getWorkingRobots(){
+        return this.runningRobots;
     }
 
     public void doWork() {
-        execute(() -> {
-            synchronized (this) {
-                Aircraft aircraft = aircrafts.poll();
-                operator.moveAircraft(aircraft);
-            }
-        });
+      //  this.operator.moveAircraft(aircrafts.poll());
+        // for (int i = 0; i < robots.size(); i++) {
+        //     if (robots.get(i).getWorkingAircraft() == null) {
+        //         if (!aircrafts.isEmpty()) {
+        //             final Aircraft a = aircrafts.poll();
+        //             robots.get(i).setWorkingAircraft(a);
+        //             notifyAll();
+        //         } else {
+        //             System.out.println("Theres no aircrafts left :(");
+        //         }
+        //     }
+        // }
+    }
+
+    public Queue<Aircraft> getAirCrafts() {
+        return this.aircrafts;
     }
 
     public ArrayList<Robot> getRobots() {
         return this.robots;
-    } 
+    }
 
     public Operator getOperator() {
         return this.operator;
-    } 
+    }
 
-    public synchronized void execute(Runnable r) {
+    public synchronized void execute(final Runnable r) {
         threadPool.execute(r);
     }
 
     public void commands() {
-        int choice  = 0;
+        int choice = 0;
 
         menu();
 
-        while(choice != 5){
+        while (choice != 5) {
             try {
                 choice = in.nextInt();
-            }
-            catch (InputMismatchException e) {
+            } catch (final InputMismatchException e) {
                 System.err.println("Wrong input! Please only input Integers...");
             }
-            in.nextLine(); 
-            switch(choice){
+            in.nextLine();
+            switch (choice) {
                 case 1:
-                    System.out.println("What is the name of the Aircraft?");
-                    String aircraftName = in.nextLine();
-                    Aircraft aircraft = new Aircraft(aircraftName);
-                    aircrafts.add(aircraft);
-                    doWork();
-                    menu();
-                break;
-                case 2:
                     System.out.println("How many Aircrafts would you like to order?");
                     int aircraftNum;
                     while (true) {
                         try {
                             aircraftNum = in.nextInt();
                             break;
-                        }
-                        catch (InputMismatchException e) {
+                        } catch (final InputMismatchException e) {
                             System.err.println("Wrong input! Please only input Integers...");
                             in.nextLine();
                             System.out.println("How many Aircrafts would you like to order?");
                         }
                     }
-                    in.nextLine(); 
+                    in.nextLine();
                     System.out.println("What are the name of the Aircrafts?");
-                    String aircraftsName = in.nextLine();
+                    final String aircraftsName = in.nextLine();
                     for (int i = 0; i < aircraftNum; i++) {
-                        Aircraft a = new Aircraft(aircraftsName + "-" + Integer.toString(i));
+                        final Aircraft a = new Aircraft(aircraftsName + "-" + Integer.toString(i));
                         aircrafts.add(a);
-                        doWork();
                     }
-                    menu();
-                break;
-                case 3:
-                    int parts;
-                    System.out.println("How many parts would you like to order?");
-                    while (true) {
-                        try {
-                            parts = in.nextInt();
-                            break;
-                        }
-                        catch (InputMismatchException e) {
-                            System.err.println("Wrong input! Please only input Integers...");
-                            in.nextLine();
-                            System.out.println("How many parts would you like to order?");
-                        }
-                    }
-                    in.nextLine(); 
-                    operator.orderParts(parts);
-                    menu();
+                    setup();
+                    while(!this.operator.checkProduction()){System.out.println("");}
+                    threadPool.shutdown();
+                    choice = 5;
                 break;
                 case 5:
                     System.out.println("Goodbye!");
@@ -132,9 +125,7 @@ public class Factory {
     public void menu(){
         System.out.println("|----------------------------------------------------------------------------------------|");
         System.out.println("|  What would you like to do :                                                           |");
-        System.out.println("|     1. Build Aircraft                                                                  |");
-        System.out.println("|     2. Build Mulitple Aircrafts                                                        |");
-        System.out.println("|     3. Buy Parts                                                                       |");
+        System.out.println("|     1. Select number of aircraft                                                       |");
         System.out.println("|     5. Close the system                                                                |");
         System.out.println("|----------------------------------------------------------------------------------------|");
     }
