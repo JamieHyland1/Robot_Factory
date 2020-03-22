@@ -21,7 +21,7 @@ public class Main extends Thread {
                     p("Starting the system...");
                     //initialise system
                     Factory f = new Factory();
-                    f.setup();
+                    f.commands();
                 break;
                 default:
                     p(choice + " isn't a valid option!");
