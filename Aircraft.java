@@ -19,8 +19,6 @@ public class Aircraft{
                 parts_needed.add((int)Math.floor(Math.random()*10));
             }
         }
-        Collections.shuffle(this.parts_needed);
-        Main.log(this.parts_needed.toString());
         // On the very low chance the foor loop adds nothing
         if (parts_needed.size() == 0) {
             parts_needed.add(0);
