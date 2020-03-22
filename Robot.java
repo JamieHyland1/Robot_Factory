@@ -56,34 +56,34 @@ public class Robot extends Thread {
     }
 
     public void returnToQueue() {
-       // Main.log(this.toString() + " is returning " + this.workingAircraft.getID() + " to the operator");
+        // Main.log(this.toString() + " is returning " + this.workingAircraft.getID() +
+        // " to the operator");
         try {
             for (int i = 0; i < this.workingAircraft.getPartsNeeded().size(); i++) {
                 if (this.workingAircraft.getPartsNeeded().get(i) == this.getID())
-                    this.workingAircraft.getPartsNeeded().remove(i);
-                    this.op.enterWaiting(this.getID()); //enter waiting list now
+                    this.op.removeRobot(i);
+                this.workingAircraft.getPartsNeeded().remove(i);
+                this.op.enterWaiting(this.getID()); // enter waiting list now
             }
-       //     Main.log(this.workingAircraft.getID() + " needs these parts "+ this.workingAircraft.getPartsNeeded().toString());
+            // Main.log(this.workingAircraft.getID() + " needs these parts "+
+            // this.workingAircraft.getPartsNeeded().toString());
             this.op.moveAircraft(this.workingAircraft);
             this.workingAircraft = null;
-        } catch(Exception e){
+        } catch (Exception e) {
             System.out.println(e);
         }
     }
 
-    // main logic for robot goes in here
-    // not sure if this is correct? I dont think we can supply the parts variable at
-    // runtime as java is pass by value
-
     public void run() {
         while (!this.op.checkProduction()) {
-            if(this.workingAircraft == null ) {
+            if (this.workingAircraft == null) {
+                if (this.op.hasWork(this.getID())) {
                     try {
+
                         this.workingAircraft = this.op.getAircraft(this.id);
                         Main.log(this.toString() + " has recieved aircraft " + this.workingAircraft.getID());
-                    } 
-                    catch (Exception ex) {
-                    Main.log(this.toString() + " is waiting");
+                    } catch (Exception ex) {
+                        Main.log(this.toString() + " is waiting");
                         try {
                             this.sleep(1000);
                         } catch (InterruptedException e) {
@@ -91,6 +91,16 @@ public class Robot extends Thread {
                             e.printStackTrace();
                         }
                     }
+                } else {
+                    Main.log(this.getID() + " isnt needed");
+                    Main.log(this.op.getRobotsNeeded());
+                    try {
+                        this.sleep(500);
+                    } catch (InterruptedException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                }
             }
             else if(this.workingAircraft != null) {
                  Main.log(this.toString() + " is working on Aircraft " + this.workingAircraft.getID());
@@ -104,6 +114,7 @@ public class Robot extends Thread {
                     }
                
                 }
+                this.installAmount = 5;
                 //TODO://order parts
                 Main.log(this.getID() + " has finished working on aircraft " + this.workingAircraft.getID());
                 this.returnToQueue();    
