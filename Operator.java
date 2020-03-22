@@ -9,19 +9,27 @@ public class Operator extends Thread {
     private int partsPool;
     private Queue<Robot> robotsWaitingList;
     private HashSet<Integer> robotsInWaiting;
+    private HashSet<Integer> robotsNeeded;
+
 
     public Operator(Factory factory) {
         this.factory = factory;
         this.partsPool = (1 + (int) Math.floor(Math.random() * 10)) * 10;
         this.robotsWaitingList = new ArrayDeque<Robot>();
         this.robotsInWaiting = new HashSet<Integer>();
+        this.robotsNeeded = new HashSet<Integer>();
         for(int i = 0; i < 10; i++){
             robotsInWaiting.add(i);
+            robotsNeeded.add((i));
         }
     }
 
     public int getPartsCount() {
         return this.partsPool;
+    }
+
+    public boolean hasWork(int id){
+        return this.robotsNeeded.contains(id);
     }
 
     public synchronized boolean getAircraftsQueue(){
@@ -30,21 +38,22 @@ public class Operator extends Thread {
 
     public void enterWaiting(int id){
         if(!this.robotsInWaiting.contains(id)){
-            Main.log("Removing robot" + id + " from waiting list");
             this.robotsInWaiting.add(id);
-            Main.log("Current waiting List: " + this.robotsInWaiting.toString());
         }
     }
 
-    public void leaveWaiting(int id){
-        Main.log("Removing robot" + id + " from waiting list");
+
+    public  void leaveWaiting(int id){
         this.robotsInWaiting.remove(id);
-        Main.log("Current Robot waiting List: " + this.robotsInWaiting.toString());
     }
 
     public synchronized boolean checkProduction() {
-        //Main.log(this.robotsInWaiting.toString());
+
         return (10 == this.robotsInWaiting.size() && this.factory.getAirCrafts().isEmpty());
+    }
+
+    public synchronized void removeRobot(int i) {
+        this.robotsNeeded.remove(i);
     }
 
     public void takeParts(Robot robot) {
@@ -65,6 +74,8 @@ public class Operator extends Thread {
 
     public synchronized Aircraft getAircraft(int id) {
         Aircraft a = this.factory.getAirCrafts().poll();
+        HashSet s = new HashSet<Integer>(a.getPartsNeeded());
+        this.robotsNeeded.addAll(s);
         if(a.getPartsNeeded().contains(id)){
             this.leaveWaiting(id); // remove the robot from the waitingList
             return a; //only give a robot an aircraft if it has the desired parts
@@ -106,6 +117,10 @@ public class Operator extends Thread {
             this.partsPool = this.partsPool + order;
             Main.log("Parts have been restocked. There are now " + getPartsCount() + " parts in stock.\n");
         }
+    }
+
+    public String getRobotsNeeded(){
+        return this.robotsNeeded.toString();
     }
 
     public  void waitingArea(int parts) {
