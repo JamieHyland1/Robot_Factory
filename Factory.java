@@ -2,36 +2,41 @@ import java.util.Queue;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.HashMap; 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.InputMismatchException;
 
 public class Factory {
 
-    private ArrayBlockingQueue<Aircraft> aircrafts;
+    private final ArrayBlockingQueue<Aircraft> aircrafts;
     private final Operator operator;
     private static ExecutorService threadPool;
     private final ArrayList<Robot> robots;
-    private final ArrayList<Future<?>> runningRobots;
+    private final HashMap<Integer, ArrayBlockingQueue<Aircraft>> queuesForRobots;
     private final Scanner in = new Scanner(System.in);
 
     public Factory() {
         if (threadPool == null) {
             threadPool = Executors.newFixedThreadPool(10);
         }
-
         aircrafts = new ArrayBlockingQueue<Aircraft>(1000);
         robots = new ArrayList<Robot>();
+        queuesForRobots = new HashMap<Integer, ArrayBlockingQueue<Aircraft>>();
         operator = new Operator(this);
-        runningRobots = new ArrayList<Future<?>>();
     }
 
     public void setup() {
         for (int i = 0; i < 10; i++) {
             final Robot r = new Robot(this, i, operator);
-            runningRobots.add(threadPool.submit(r));
+            queuesForRobots.put(i,new ArrayBlockingQueue<Aircraft>(100));
+            threadPool.submit(r);
         }
+        this.operator.disperseAircrafts();
+    }
+
+    public HashMap<Integer, ArrayBlockingQueue<Aircraft>> getQueuesForRobots(){
+        return this.queuesForRobots;
     }
 
     public Queue<Aircraft> getAirCrafts() {
@@ -79,6 +84,7 @@ public class Factory {
                         final Aircraft a = new Aircraft(aircraftsName + "-" + Integer.toString(i));
                         aircrafts.add(a);
                     }
+                    
                     setup();
                     threadPool.shutdown();
                     choice = 2;
