@@ -25,7 +25,7 @@ public class Operator extends Thread {
         
     }
 
-    public void disperseAircrafts(){
+    public synchronized void disperseAircrafts(){
         while(!this.factory.getAirCrafts().isEmpty()){
             Aircraft a = this.factory.getAirCrafts().poll();
             int id = a.getPartsNeeded().get(0);

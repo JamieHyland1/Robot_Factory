@@ -77,9 +77,10 @@ public class Robot extends Thread {
                     }
             }
             else if(this.workingAircraft != null) {
+                System.out.println(this.workingAircraft.getPartsNeeded());
                 getParts(this);
                 Main.log(this.toString() + " is working on Aircraft " + this.workingAircraft.getID());
-                Main.log(this.toString() + " :*clank* *clank*");
+                Main.log(this.toString() + " : *clank* *clank*");
                 this.numOfAircrafts++;
                 while (this.installAmount > 0) {
                     this.installAmount--;

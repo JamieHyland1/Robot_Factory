@@ -13,10 +13,10 @@ public class Aircraft{
         //default constructor
         this.id = id;
         //randomly sets aircraft's need work array from 0 - 9
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 10; i++) {
             //50/50 chance
             if (rn.nextBoolean()) {
-                parts_needed.add((int)Math.floor(Math.random()*10));
+                parts_needed.add(i);
             }
         }
         // On the very low chance the foor loop adds nothing
@@ -34,6 +34,6 @@ public class Aircraft{
     }
 
     public String toString() {
-        return "\n Aircraft: " + getID() + " needs work on " + getPartsNeeded();
+        return "\nAircraft: " + getID() + " needs work on " + getPartsNeeded();
     }
 }
