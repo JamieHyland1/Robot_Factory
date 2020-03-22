@@ -1,9 +1,7 @@
-import java.util.ArrayDeque;
 import java.util.Queue;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -15,7 +13,7 @@ public class Factory {
     private final Operator operator;
     private static ExecutorService threadPool;
     private final ArrayList<Robot> robots;
-    private final ArrayList<Future> runningRobots;
+    private final ArrayList<Future<?>> runningRobots;
     private final Scanner in = new Scanner(System.in);
 
     public Factory() {
@@ -26,36 +24,14 @@ public class Factory {
         aircrafts = new ArrayBlockingQueue<Aircraft>(1000);
         robots = new ArrayList<Robot>();
         operator = new Operator(this);
-        runningRobots = new ArrayList<Future>();
-
+        runningRobots = new ArrayList<Future<?>>();
     }
 
     public void setup() {
         for (int i = 0; i < 10; i++) {
             final Robot r = new Robot(this, i, operator);
-            //robots.add(r);
             runningRobots.add(threadPool.submit(r));
         }
-        // threadPool.shutdown();
-    }
-
-    public ArrayList<Future> getWorkingRobots(){
-        return this.runningRobots;
-    }
-
-    public void doWork() {
-      //  this.operator.moveAircraft(aircrafts.poll());
-        // for (int i = 0; i < robots.size(); i++) {
-        //     if (robots.get(i).getWorkingAircraft() == null) {
-        //         if (!aircrafts.isEmpty()) {
-        //             final Aircraft a = aircrafts.poll();
-        //             robots.get(i).setWorkingAircraft(a);
-        //             notifyAll();
-        //         } else {
-        //             Main.log("Theres no aircrafts left :(");
-        //         }
-        //     }
-        // }
     }
 
     public Queue<Aircraft> getAirCrafts() {
@@ -70,16 +46,12 @@ public class Factory {
         return this.operator;
     }
 
-    public synchronized void execute(final Runnable r) {
-        threadPool.execute(r);
-    }
-
     public void commands() {
-        int choice = 0;
 
+        int choice = 0;
         menu();
 
-        while (choice != 5) {
+        while (choice != 2) {
             try {
                 choice = in.nextInt();
             } catch (final InputMismatchException e) {
@@ -108,12 +80,10 @@ public class Factory {
                         aircrafts.add(a);
                     }
                     setup();
-                    //keeps printing out an array?
-                    //while(!this.operator.checkProduction()){Main.log("");}
                     threadPool.shutdown();
-                    choice = 5;
+                    choice = 2;
                 break;
-                case 5:
+                case 2:
                     Main.log("Goodbye!");
                 break;
                 default:
@@ -126,8 +96,8 @@ public class Factory {
     public void menu(){
         Main.log("|----------------------------------------------------------------------------------------|");
         Main.log("|  What would you like to do :                                                           |");
-        Main.log("|     1. Select number of aircraft                                                       |");
-        Main.log("|     5. Close the system                                                                |");
+        Main.log("|     1. Build some Aircrafts                                                            |");
+        Main.log("|     2. Close the system                                                                |");
         Main.log("|----------------------------------------------------------------------------------------|");
     }
 }
